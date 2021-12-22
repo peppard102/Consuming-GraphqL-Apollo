@@ -19,12 +19,14 @@ const SESSIONS = gql`
 
 function AllSessionList() {
   /* ---> Invoke useQuery hook here to retrieve all sessions and call SessionItem */
-  const { loading, data } = useQuery(SESSIONS, {
+  const { loading, error, data } = useQuery(SESSIONS, {
     variables: { day: "All" },
   });
 
   if (loading) return <p>Loading Sessions...</p>;
 
+  if (error) return <p>Error loading sessions...</p>;
+  debugger;
   return data.sessions.map((session) => (
     <SessionItem key={session.id} session={{ ...session }} />
   ));
@@ -32,11 +34,13 @@ function AllSessionList() {
 
 function SessionList({ day }) {
   /* ---> Invoke useQuery hook here to retrieve sessions per day and call SessionItem */
-  const { loading, data } = useQuery(SESSIONS, {
+  const { loading, error, data } = useQuery(SESSIONS, {
     variables: { day },
   });
 
   if (loading) return <p>Loading Sessions...</p>;
+
+  if (error) return <p>Error loading sessions...</p>;
 
   return data.sessions.map((session) => (
     <SessionItem key={session.id} session={{ ...session }} />
