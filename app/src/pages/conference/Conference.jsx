@@ -19,7 +19,7 @@ export function Conference() {
         <Route path={`${path}/speakers`}>
           <Speakers />
         </Route>
-        <Route path={`${path}/speaker/:speaker_id`}>
+        <Route path={`${path}/speaker/:speakerId`}>
           <Speaker />
         </Route>
         <Route path={`${path}`}>

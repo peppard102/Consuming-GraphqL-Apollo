@@ -1,20 +1,36 @@
 import * as React from "react";
 import "./style-sessions.css";
 import { gql, useQuery } from "@apollo/client";
+import { useParams } from "react-router-dom";
 
+const SPEAKER_ATTRIBUTES = gql`
+  fragment SpeakerInfo on Speaker {
+    id
+    name
+    bio
+    sessions {
+      id
+      title
+    }
+  }
+`;
 /* ---> Define queries, mutations and fragments here */
 const SPEAKERS = gql`
   query speakers {
     speakers {
-      id
-      name
-      bio
-      sessions {
-        id
-        title
-      }
+      ...SpeakerInfo
     }
   }
+  ${SPEAKER_ATTRIBUTES}
+`;
+
+const SPEAKER_BY_ID = gql`
+  query speakerById($id: ID!) {
+    speakerById(id: $id) {
+      ...SpeakerInfo
+    }
+  }
+  ${SPEAKER_ATTRIBUTES}
 `;
 
 const SpeakerList = () => {
@@ -71,23 +87,31 @@ const SpeakerList = () => {
 };
 
 const SpeakerDetails = () => {
+  const { speakerId } = useParams();
+
+  const { loading, error, data } = useQuery(SPEAKER_BY_ID, {
+    variables: {
+      id: speakerId,
+    },
+  });
+
+  if (loading) return <p>Loading speaker...</p>;
+
+  if (error) return <p>Error loading speaker...</p>;
+
+  const { id, name, bio, sessions } = data.speakerById;
+
   /* ---> Replace hardcoded speaker values with data that you get back from GraphQL server here */
   return (
-    <div key={"id"} className="col-xs-12" style={{ padding: 5 }}>
+    <div key={id} className="col-xs-12" style={{ padding: 5 }}>
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">{"name"}</h3>
+          <h3 className="panel-title">{name}</h3>
         </div>
         <div className="panel-body">
-          <h5>{"bio"}</h5>
+          <h5>{bio}</h5>
         </div>
-        <div className="panel-footer">
-          {
-            {
-              /* ---> Loop through speaker's sessions here */
-            }
-          }
-        </div>
+        <div className="panel-footer">test</div>
       </div>
     </div>
   );
