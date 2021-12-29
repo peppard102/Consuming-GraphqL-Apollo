@@ -3,7 +3,6 @@ import "./style-sessions.css";
 import { Link } from "react-router-dom";
 import { Formik, Field, Form } from "formik";
 import { gql, useQuery } from "@apollo/client";
-import { Speakers } from "./Speakers";
 
 /* ---> Define queries, mutations and fragments here */
 const SESSIONS = gql`
@@ -75,7 +74,7 @@ function SessionItem({ session }) {
                 className="btn btn-default btn-lg"
                 to={`/conference/speaker/${id}`}
               >
-                View {name}'s Profile'
+                View {name}'s Profile
               </Link>
             </span>
           ))}

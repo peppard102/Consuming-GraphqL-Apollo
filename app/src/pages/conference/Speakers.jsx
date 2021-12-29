@@ -111,7 +111,13 @@ const SpeakerDetails = () => {
         <div className="panel-body">
           <h5>{bio}</h5>
         </div>
-        <div className="panel-footer">test</div>
+        <div className="panel-footer">
+          {sessions.map(({ id, title }) => (
+            <span key={id} style={{ padding: 5 }}>
+              {title}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
