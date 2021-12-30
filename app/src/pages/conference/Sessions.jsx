@@ -5,20 +5,34 @@ import { Formik, Field, Form } from "formik";
 import { gql, useQuery } from "@apollo/client";
 
 /* ---> Define queries, mutations and fragments here */
-const SESSIONS = gql`
-  query sessions($day: String!) {
-    sessions(day: $day) {
+const SESSIONS_ATTRIBUTES = gql`
+  fragment SessionInfo on Session {
+    id
+    title
+    day
+    room
+    level
+    startsAt
+    speakers {
       id
-      title
-      day
-      room
-      level
-      speakers {
-        id
-        name
-      }
+      name
     }
   }
+`;
+
+const SESSIONS = gql`
+  query sessions($day: String!) {
+    intro: sessions(day: $day, level: "Introductory and overview") {
+      ...SessionInfo
+    }
+    intermediate: sessions(day: $day, level: "Intermediate") {
+      ...SessionInfo
+    }
+    advanced: sessions(day: $day, level: "Advanced") {
+      ...SessionInfo
+    }
+  }
+  ${SESSIONS_ATTRIBUTES}
 `;
 
 function AllSessionList() {
@@ -45,15 +59,15 @@ function SessionList({ day }) {
   if (loading) return <p>Loading Sessions...</p>;
 
   if (error) return <p>Error loading sessions...</p>;
-
-  return data.sessions.map((session) => (
-    <SessionItem key={session.id} session={{ ...session }} />
-  ));
+  debugger;
+  return [...data.intro, ...data.intermediate, ...data.advanced].map(
+    (session) => <SessionItem key={session.id} session={{ ...session }} />
+  );
 }
 
 function SessionItem({ session }) {
   /* ---> Replace hard coded session values with data that you get back from GraphQL server here */
-  const { id, title, day, room, level, speakers } = session;
+  const { id, title, day, room, level, startsAt, speakers } = session;
 
   return (
     <div key={id} className="col-xs-12 col-sm-6" style={{ padding: 5 }}>
@@ -65,7 +79,7 @@ function SessionItem({ session }) {
         <div className="panel-body">
           <h5>{`Day: ${day}`}</h5>
           <h5>{`Room Number: ${room}`}</h5>
-          <h5>{`Starts at: ${level}`}</h5>
+          <h5>{`Starts at: ${startsAt}`}</h5>
         </div>
         <div className="panel-footer">
           {speakers.map(({ id, name }) => (
