@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./style-sessions.css";
 import { Link } from "react-router-dom";
 import { Formik, Field, Form } from "formik";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 
 /* ---> Define queries, mutations and fragments here */
 const SESSIONS_ATTRIBUTES = gql`
@@ -12,6 +12,7 @@ const SESSIONS_ATTRIBUTES = gql`
     day
     room
     level
+    description @include(if: $isDescription)
     startsAt
     speakers {
       id
@@ -20,8 +21,17 @@ const SESSIONS_ATTRIBUTES = gql`
   }
 `;
 
+const CREATE_SESSION = gql`
+  mutation createSession($session: SessionInput!) {
+    createSession(session: $session) {
+      id
+      title
+    }
+  }
+`;
+
 const SESSIONS = gql`
-  query sessions($day: String!) {
+  query sessions($day: String!, $isDescription: Boolean!) {
     intro: sessions(day: $day, level: "Introductory and overview") {
       ...SessionInfo
     }
@@ -51,9 +61,10 @@ function AllSessionList() {
 }
 
 function SessionList({ day }) {
+  let isDescription = true;
   /* ---> Invoke useQuery hook here to retrieve sessions per day and call SessionItem */
   const { loading, error, data } = useQuery(SESSIONS, {
-    variables: { day },
+    variables: { day, isDescription },
   });
 
   if (loading) return <p>Loading Sessions...</p>;
@@ -67,7 +78,8 @@ function SessionList({ day }) {
 
 function SessionItem({ session }) {
   /* ---> Replace hard coded session values with data that you get back from GraphQL server here */
-  const { id, title, day, room, level, startsAt, speakers } = session;
+  const { id, title, day, room, level, description, startsAt, speakers } =
+    session;
 
   return (
     <div key={id} className="col-xs-12 col-sm-6" style={{ padding: 5 }}>
@@ -80,6 +92,7 @@ function SessionItem({ session }) {
           <h5>{`Day: ${day}`}</h5>
           <h5>{`Room Number: ${room}`}</h5>
           <h5>{`Starts at: ${startsAt}`}</h5>
+          {description && <h5>{`Description: ${description}`}</h5>}
         </div>
         <div className="panel-footer">
           {speakers.map(({ id, name }) => (
@@ -152,6 +165,10 @@ export function Sessions() {
 
 export function SessionForm() {
   /* ---> Call useMutation hook here to create new session and update cache */
+  const [create, { called, error }] = useMutation(CREATE_SESSION);
+
+  if (called) return <p>Session submitted successfully</p>;
+  if (error) return <p>Failed to submit session</p>;
 
   return (
     <div
@@ -170,7 +187,8 @@ export function SessionForm() {
           day: "",
           level: "",
         }}
-        onSubmit={() => {
+        onSubmit={async (values) => {
+          await create({ variables: { session: values } });
           /* ---> Call useMutation mutate function here to create new session */
         }}
       >

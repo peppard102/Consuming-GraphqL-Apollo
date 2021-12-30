@@ -3630,6 +3630,34 @@
       "level": "Intermediate",
       "day": "Thursday",
       "id": "814b1f5e-e6df-440b-a91c-df198b5bbed2"
+    },
+    {
+      "title": "Test session",
+      "description": "Test session",
+      "level": "Intermediate",
+      "day": "Wednesday",
+      "id": "6f0ebfb9-2bab-4ae9-b49b-237c25e890fa"
+    },
+    {
+      "title": "Test session",
+      "description": "Test session",
+      "level": "Intermediate",
+      "day": "Wednesday",
+      "id": "52944eb6-2029-4407-9741-87434896f14e"
+    },
+    {
+      "title": "Test session",
+      "description": "Test session",
+      "level": "Intermediate",
+      "day": "Wednesday",
+      "id": "2c467747-d7a8-4e3c-b85a-19583c0abf4f"
+    },
+    {
+      "title": "test",
+      "description": "test",
+      "level": "Intermediate",
+      "day": "Wednesday",
+      "id": "eaa7512b-3bc8-443f-a2c0-1388552e5f8a"
     }
   ]
 }
