@@ -45,19 +45,35 @@ const SESSIONS = gql`
   ${SESSIONS_ATTRIBUTES}
 `;
 
+const ALL_SESSIONS = gql`
+  query sessions($isDescription: Boolean!) {
+    intro: sessions(level: "Introductory and overview") {
+      ...SessionInfo
+    }
+    intermediate: sessions(level: "Intermediate") {
+      ...SessionInfo
+    }
+    advanced: sessions(level: "Advanced") {
+      ...SessionInfo
+    }
+  }
+  ${SESSIONS_ATTRIBUTES}
+`;
+
 function AllSessionList() {
-  /* ---> Invoke useQuery hook here to retrieve all sessions and call SessionItem */
-  const { loading, error, data } = useQuery(SESSIONS, {
-    variables: { day: "All" },
+  let isDescription = true;
+  /* ---> Invoke useQuery hook here to retrieve sessions per day and call SessionItem */
+  const { loading, error, data } = useQuery(ALL_SESSIONS, {
+    variables: { isDescription },
   });
 
   if (loading) return <p>Loading Sessions...</p>;
 
   if (error) return <p>Error loading sessions...</p>;
-  debugger;
-  return data.sessions.map((session) => (
-    <SessionItem key={session.id} session={{ ...session }} />
-  ));
+
+  return [...data.intro, ...data.intermediate, ...data.advanced].map(
+    (session) => <SessionItem key={session.id} session={{ ...session }} />
+  );
 }
 
 function SessionList({ day }) {
@@ -70,7 +86,7 @@ function SessionList({ day }) {
   if (loading) return <p>Loading Sessions...</p>;
 
   if (error) return <p>Error loading sessions...</p>;
-  debugger;
+
   return [...data.intro, ...data.intermediate, ...data.advanced].map(
     (session) => <SessionItem key={session.id} session={{ ...session }} />
   );
