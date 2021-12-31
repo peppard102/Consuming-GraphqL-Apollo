@@ -24,8 +24,7 @@ const SESSIONS_ATTRIBUTES = gql`
 const CREATE_SESSION = gql`
   mutation createSession($session: SessionInput!) {
     createSession(session: $session) {
-      id
-      title
+      ...SessionInfo
     }
   }
 `;
@@ -181,7 +180,23 @@ export function Sessions() {
 
 export function SessionForm() {
   /* ---> Call useMutation hook here to create new session and update cache */
-  const [create, { called, error }] = useMutation(CREATE_SESSION);
+  const updateSessions = (cache, { data }) => {
+    cache.modify({
+      fields: {
+        sessions(exisitingSessions = []) {
+          const newSession = data.createSession;
+          cache.writeQuery({
+            query: ALL_SESSIONS,
+            data: { newSession, ...exisitingSessions },
+          });
+        },
+      },
+    });
+  };
+
+  const [create, { called, error }] = useMutation(CREATE_SESSION, {
+    update: updateSessions,
+  });
 
   if (called) return <p>Session submitted successfully</p>;
   if (error) return <p>Failed to submit session</p>;
